@@ -74,52 +74,48 @@ const AuthForm = () => {
 
   return (
     <section>
-    {/* <Card sx={{ maxWidth: 345 }}>
-      <CardContent> */}
-        <Typography variant="h5" component="div">test
-          {/* {isLoginIsNotSignUp ? 'Login' : 'Sign Up'} */}
-        </Typography>
-        {/* <form onSubmit={submitHandler}>
-          <div>
-            <label htmlFor="email">Your Email</label>
-            <TextField
-              id="email"
-              type="email"
-              inputRef={emailInputRef}
-              required
-              variant="outlined"
-              fullWidth
-            />
-          </div>
-          <div>
-            <label htmlFor="password">Password</label>
-            <TextField
-              id="password"
-              type="password"
-              inputRef={passwordInputRef}
-              required
-              minLength={8}
-              variant="outlined"
-              fullWidth
-            />
-          </div>
-          <div>
-            {!isLoading && (
-              <Button variant="contained" color="primary" type="submit">
-                {isLoginIsNotSignUp ? 'Login' : 'Create Account'}
-              </Button>
-            )}
-            {isLoading && <CircularProgress />}
-            {error && <Typography color="error">{error}</Typography>}
-            <Button variant="text" onClick={switchAuthModeHandler}>
-              {isLoginIsNotSignUp
-                ? 'Create new account'
-                : 'Login with existing account'}
+      <Typography variant="h1" component="div">
+        {isLoginIsNotSignUp ? 'Login' : 'Sign Up'}
+      </Typography>
+      <form onSubmit={submitHandler}>
+        <div>
+          <label htmlFor="email">Your Email</label>
+          <TextField
+            id="email"
+            type="email"
+            inputRef={emailInputRef}
+            required
+            variant="outlined"
+            fullWidth
+          />
+        </div>
+        <div>
+          <label htmlFor="password">Password</label>
+          <TextField
+            id="password"
+            type="password"
+            inputRef={passwordInputRef}
+            required
+            minLength={8}
+            variant="outlined"
+            fullWidth
+          />
+        </div>
+        <div>
+          {!isLoading && (
+            <Button variant="contained" color="primary" type="submit">
+              {isLoginIsNotSignUp ? 'Login' : 'Create Account'}
             </Button>
-          </div>
-        </form> */}
-      {/* </CardContent>
-    </Card> */}
+          )}
+          {isLoading && <CircularProgress />}
+          {error && <Typography color="error">{error}</Typography>}
+          <Button variant="text" onClick={switchAuthModeHandler}>
+            {isLoginIsNotSignUp
+              ? 'Create new account'
+              : 'Login with existing account'}
+          </Button>
+        </div>
+      </form>
     </section>
   );
 };
