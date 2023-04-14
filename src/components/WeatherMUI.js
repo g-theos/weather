@@ -17,6 +17,8 @@ function Weather() {
     //height: 100,
   });
   const userId = useSelector((state) => state.auth.userId);
+  const threshold = useSelector((state) => state.settings.threshold); // customizable threshold
+
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -67,9 +69,9 @@ function Weather() {
           )
             .then((response) => response.json())
             .then((data) => {
-              const threshold = 2; // customizable threshold
               const forecasts = data.DailyForecasts;
               const initialForecasts = weatherData.DailyForecasts;
+              console.log(threshold);
 
               for (let i = 0; i < forecasts.length; i++) {
                 for (let j = 0; j < initialForecasts.length; j++) {
@@ -127,7 +129,7 @@ function Weather() {
       // Clean up interval when component unmounts
       return () => clearInterval(interval);
     },
-    [location, locationKey] /* [location, lastViewedTime, locationKey] */
+    [location, locationKey, threshold] /* [location, lastViewedTime, locationKey] */
   );
 
   const handleLocationChange = (event) => {
@@ -135,7 +137,7 @@ function Weather() {
   };
 
   return (
-    <Card sx={{ maxWidth: 345, margin: '2rem'}}>
+    <Card sx={{ maxWidth: 345, margin: '2rem' }}>
       <CardContent>
         <Typography variant="h5" component="div" align="center">
           Weather for {location}
@@ -153,7 +155,7 @@ function Weather() {
             <Typography variant="body2" color="text.secondary">
               {weatherData.Headline.Text}
             </Typography>
-           {/*  <Typography variant="body1" color="text.primary" margin={2}>
+            {/*  <Typography variant="body1" color="text.primary" margin={2}>
               Temperature:{' '}
               {weatherData.DailyForecasts[0].Temperature.Maximum.Value}°
               {weatherData.DailyForecasts[0].Temperature.Maximum.Unit}
@@ -163,18 +165,30 @@ function Weather() {
             </Typography> */}
           </div>
         )}
-        <Typography variant="h5" color="text.primary" align='center' marginTop={4}>
+        <Typography
+          variant="h5"
+          color="text.primary"
+          align="center"
+          marginTop={4}
+        >
           5 Day Forecast:
         </Typography>
         {weatherData.DailyForecasts &&
           weatherData.DailyForecasts.map((forecast, index) => {
             return (
               <Card key={index} sx={{ margin: 3 }}>
-                <CardContent sx={{ display: 'flex', flexDirection: 'column', alignItems:'center', justifyContent: 'center' }} >
-                <Typography variant="body2" color="text.secondary" margin={2}>
-                  {formatDate(forecast.Date)}
-                </Typography>
-  
+                <CardContent
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Typography variant="body2" color="text.secondary" margin={2}>
+                    {formatDate(forecast.Date)}
+                  </Typography>
+
                   <WeatherIcon
                     src={`https://developer.accuweather.com/sites/default/files/${
                       forecast.Day.Icon < 10 ? '0' : ''
@@ -182,13 +196,13 @@ function Weather() {
                     alt={forecast.Day.IconPhrase}
                   />
 
-                <Typography variant="body1" color="text.primary" margin={1}>
-                  {forecast.Temperature.Maximum.Value}°
-                  {forecast.Temperature.Maximum.Unit}
-                </Typography>
-                <Typography variant="body1" color="text.primary" margin={1}>
-                  {forecast.Day.IconPhrase}
-                </Typography>
+                  <Typography variant="body1" color="text.primary" margin={1}>
+                    {forecast.Temperature.Maximum.Value}°
+                    {forecast.Temperature.Maximum.Unit}
+                  </Typography>
+                  <Typography variant="body1" color="text.primary" margin={1}>
+                    {forecast.Day.IconPhrase}
+                  </Typography>
                 </CardContent>
               </Card>
             );
