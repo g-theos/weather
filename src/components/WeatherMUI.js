@@ -30,107 +30,105 @@ function Weather() {
       .catch((error) => console.log(error));
   }, []);
 
-  useEffect(
-    () => {
-      // Fetch location key when component mounts or location changes
+  useEffect(() => {
+    // Fetch location key when component mounts or location changes
+    fetch(
+      `https://dataservice.accuweather.com/locations/v1/search?apikey=${ACCUWEATHER_API_KEY}&q=${location}`
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.length > 0) {
+          const key = data[0].Key;
+          setLocationKey(key);
+        } else {
+          setLocationKey(null);
+        }
+      })
+      .catch((error) => console.log(error));
+
+    // Fetch weather data when location key is available
+    if (locationKey !== null) {
       fetch(
-        `https://dataservice.accuweather.com/locations/v1/search?apikey=${ACCUWEATHER_API_KEY}&q=${location}`
+        `https://dataservice.accuweather.com/forecasts/v1/daily/5day/${locationKey}?apikey=${ACCUWEATHER_API_KEY}&metric=true`
       )
         .then((response) => response.json())
         .then((data) => {
-          if (data.length > 0) {
-            const key = data[0].Key;
-            setLocationKey(key);
-          } else {
-            setLocationKey(null);
-          }
+          setWeatherData(data);
+          setLastViewedTime(Date.now());
+          //console.log(new Date(lastViewedTime));
         })
         .catch((error) => console.log(error));
+    }
+  }, [location, locationKey]);
 
-      // Fetch weather data when location key is available
-      if (locationKey !== null) {
+  useEffect(() => {
+    // Check weather condition after a delay
+    const delay = 60 * 1000; // 1 minute delay
+    const interval = setInterval(() => {
+      if (lastViewedTime !== null && locationKey !== null) {
         fetch(
           `https://dataservice.accuweather.com/forecasts/v1/daily/5day/${locationKey}?apikey=${ACCUWEATHER_API_KEY}&metric=true`
         )
           .then((response) => response.json())
           .then((data) => {
-            setWeatherData(data);
-            setLastViewedTime(Date.now());
-          })
-          .catch((error) => console.log(error));
-      }
+            const forecasts = data.DailyForecasts;
+            const initialForecasts = weatherData.DailyForecasts;
+            console.log(threshold);
 
-      // Check weather condition after a delay
-      const delay = 60 * 1000; // 1 minute delay
-      const interval = setInterval(() => {
-        if (lastViewedTime !== null && locationKey !== null) {
-          fetch(
-            `https://dataservice.accuweather.com/forecasts/v1/daily/5day/${locationKey}?apikey=${ACCUWEATHER_API_KEY}&metric=true`
-          )
-            .then((response) => response.json())
-            .then((data) => {
-              const forecasts = data.DailyForecasts;
-              const initialForecasts = weatherData.DailyForecasts;
-              console.log(threshold);
-
-              for (let i = 0; i < forecasts.length; i++) {
-                for (let j = 0; j < initialForecasts.length; j++) {
+            for (let i = 0; i < forecasts.length; i++) {
+              for (let j = 0; j < initialForecasts.length; j++) {
+                if (forecasts[i].EpochDate === initialForecasts[j].EpochDate) {
                   if (
-                    forecasts[i].EpochDate === initialForecasts[j].EpochDate
+                    Math.abs(
+                      forecasts[i].Temperature.Minimum.Value -
+                        initialForecasts[j].Temperature.Minimum.Value
+                    ) > threshold
                   ) {
-                    if (
-                      Math.abs(
-                        forecasts[i].Temperature.Minimum.Value -
-                          initialForecasts[j].Temperature.Minimum.Value
-                      ) > threshold
-                    ) {
-                      // Send notification
-                      const title = 'Weather Alert';
-                      const options = {
-                        body: `Minimum temperature on ${forecasts[i].Date} has altered since ${lastViewedTime} to ${forecasts[i].Temperature.Minimum.Value}°C`,
-                      };
-                      //new Notification(title, options);
-                      alert(title + ' ' + options.body);
-                    }
-                    if (
-                      Math.abs(
-                        forecasts[i].Temperature.Maximum.Value -
-                          initialForecasts[j].Temperature.Maximum.Value
-                      ) > threshold
-                    ) {
-                      // Send notification
-                      const title = 'Weather Alert';
-                      const options = {
-                        body: `Maximum temperature on ${forecasts[i].Date} has altered since ${lastViewedTime} to ${forecasts[i].Temperature.Maximum.Value}°C`,
-                      };
-                      //new Notification(title, options);
-                      alert(title + ' ' + options.body);
-                    }
-                    if (
-                      forecasts[i].Day.IconPhrase !==
-                      initialForecasts[j].Day.IconPhrase
-                    ) {
-                      // Send notification
-                      const title = 'Weather Alert';
-                      const options = {
-                        body: `Weather conditions on ${forecasts[i].Date} has altered since ${lastViewedTime} to ${forecasts[i].Day.IconPhrase}`,
-                      };
-                      //new Notification(title, options);
-                      alert(title + ' ' + options.body);
-                    }
+                    // Send notification
+                    const title = 'Weather Alert';
+                    const options = {
+                      body: `Minimum temperature on ${forecasts[i].Date} has altered since ${lastViewedTime} to ${forecasts[i].Temperature.Minimum.Value}°C`,
+                    };
+                    //new Notification(title, options);
+                    alert(title + ' ' + options.body);
+                  }
+                  if (
+                    Math.abs(
+                      forecasts[i].Temperature.Maximum.Value -
+                        initialForecasts[j].Temperature.Maximum.Value
+                    ) > threshold
+                  ) {
+                    // Send notification
+                    const title = 'Weather Alert';
+                    const options = {
+                      body: `Maximum temperature on ${forecasts[i].Date} has altered since ${lastViewedTime} to ${forecasts[i].Temperature.Maximum.Value}°C`,
+                    };
+                    //new Notification(title, options);
+                    alert(title + ' ' + options.body);
+                  }
+                  if (
+                    forecasts[i].Day.IconPhrase !==
+                    initialForecasts[j].Day.IconPhrase
+                  ) {
+                    // Send notification
+                    const title = 'Weather Alert';
+                    const options = {
+                      body: `Weather conditions on ${forecasts[i].Date} has altered since ${lastViewedTime} to ${forecasts[i].Day.IconPhrase}`,
+                    };
+                    //new Notification(title, options);
+                    alert(title + ' ' + options.body);
                   }
                 }
               }
-            })
-            .catch((error) => console.log(error));
-        }
-      }, delay);
+            }
+          })
+          .catch((error) => console.log(error));
+      }
+    }, delay);
 
-      // Clean up interval when component unmounts
-      return () => clearInterval(interval);
-    },
-    [location, locationKey, threshold] /* [location, lastViewedTime, locationKey] */
-  );
+    // Clean up interval when component unmounts
+    return () => clearInterval(interval); //Possibly need to make changes when worker functionality is enabled
+  }, [lastViewedTime, locationKey, threshold, weatherData.DailyForecasts]);
 
   const handleLocationChange = (event) => {
     setLocation(event.target.value);
