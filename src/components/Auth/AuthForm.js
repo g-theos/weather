@@ -1,9 +1,8 @@
 import { useState, useRef, useContext } from 'react';
 import useHttp from '../../hooks/use-http';
 import { FIREBASE_API_KEY } from '../../global-config';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { login } from '../../store/authActions';
-//import AuthContext from '../../store/auth-context';
 
 import { useNavigate } from 'react-router-dom';
 import {
@@ -13,13 +12,14 @@ import {
   Typography,
   CircularProgress,
   CardContent,
+  //CssBaseline
 } from '@mui/material';
+import { Margin } from '@mui/icons-material';
 
 const AuthForm = () => {
   const emailInputRef = useRef();
   const passwordInputRef = useRef();
 
-  //const authCtx = useContext(AuthContext);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -43,9 +43,8 @@ const AuthForm = () => {
     } */
 
     const userData = (data) => {
-      //authCtx.login(data.idToken, data.localId);
       dispatch(login(data.idToken, data.localId));
-      //navigate('/', { replace: true });
+      navigate('/', { replace: true });
     };
 
     let url;
@@ -73,50 +72,54 @@ const AuthForm = () => {
   };
 
   return (
-    <section>
-      <Typography variant="h1" component="div">
-        {isLoginIsNotSignUp ? 'Login' : 'Sign Up'}
-      </Typography>
-      <form onSubmit={submitHandler}>
-        <div>
-          <label htmlFor="email">Your Email</label>
-          <TextField
-            id="email"
-            type="email"
-            inputRef={emailInputRef}
-            required
-            variant="outlined"
-            fullWidth
-          />
-        </div>
-        <div>
-          <label htmlFor="password">Password</label>
-          <TextField
-            id="password"
-            type="password"
-            inputRef={passwordInputRef}
-            required
-            minLength={8}
-            variant="outlined"
-            fullWidth
-          />
-        </div>
-        <div>
-          {!isLoading && (
-            <Button variant="contained" color="primary" type="submit">
-              {isLoginIsNotSignUp ? 'Login' : 'Create Account'}
-            </Button>
-          )}
-          {isLoading && <CircularProgress />}
-          {error && <Typography color="error">{error}</Typography>}
-          <Button variant="text" onClick={switchAuthModeHandler}>
-            {isLoginIsNotSignUp
-              ? 'Create new account'
-              : 'Login with existing account'}
-          </Button>
-        </div>
-      </form>
-    </section>
+    <>
+      <Card sx={{ maxWidth: 345, margin: '2rem' }}>
+        <CardContent>
+          <Typography variant="h5" component="div" align="center" mb={2}>
+            {isLoginIsNotSignUp ? 'Login' : 'Sign Up'}
+          </Typography>
+          <form onSubmit={submitHandler}>
+            <div>
+              <label htmlFor="email">Your Email</label>
+              <TextField
+                id="email"
+                type="email"
+                inputRef={emailInputRef}
+                required
+                variant="outlined"
+                fullWidth
+              />
+            </div>
+            <div>
+              <label htmlFor="password">Password</label>
+              <TextField
+                id="password"
+                type="password"
+                inputRef={passwordInputRef}
+                required
+                minLength={8}
+                variant="outlined"
+                fullWidth
+              />
+            </div>
+            <div style={{ margin: '1rem' }}>
+              {!isLoading && (
+                <Button variant="contained" color="primary" type="submit">
+                  {isLoginIsNotSignUp ? 'Login' : 'Create Account'}
+                </Button>
+              )}
+              {isLoading && <CircularProgress />}
+              {error && <Typography color="error">{error}</Typography>}
+              <Button variant="text" onClick={switchAuthModeHandler}>
+                {isLoginIsNotSignUp
+                  ? 'Create new account'
+                  : 'Login with existing account'}
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+    </>
   );
 };
 

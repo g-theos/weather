@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { ACCUWEATHER_API_KEY } from '../global-config';
 
 function Weather() {
   const [weatherData, setWeatherData] = useState({});
@@ -6,7 +7,7 @@ function Weather() {
 
   useEffect(() => {
     // Fetch weather data when component mounts
-    fetch('https://dataservice.accuweather.com/forecasts/v1/daily/5day/182536?apikey=8e35R3jrbHwahNGlNy73QFIv0rTUWre7&metric=true')
+    fetch(`https://dataservice.accuweather.com/forecasts/v1/daily/5day/182536?apikey=${ACCUWEATHER_API_KEY}&metric=true`)
       .then(response => response.json())
       .then(data => {
         setWeatherData(data);
@@ -18,7 +19,7 @@ function Weather() {
     const delay = 60 * 1000; // 1 minute delay
     const interval = setInterval(() => {
       if (lastViewedTime !== null) {
-        fetch('https://dataservice.accuweather.com/currentconditions/v1/182536?apikey=8e35R3jrbHwahNGlNy73QFIv0rTUWre7')
+        fetch(`https://dataservice.accuweather.com/currentconditions/v1/182536?apikey=${ACCUWEATHER_API_KEY}`)
           .then(response => response.json())
           .then(data => {
             const currentCondition = data[0].WeatherText;
