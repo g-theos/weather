@@ -6,6 +6,7 @@ import { formatDate } from './Utils/FormatDate';
 import { FIREBASE_DATABASE_URL } from '../global-config';
 import { useDispatch, useSelector } from 'react-redux';
 import { setThreshold } from '../store/settingsActions';
+import AccuWeatherAutocomplete from './AccuWeatherAutocomplete';
 
 function Weather() {
   const [location, setLocation] = useState('Athens, Greece');
@@ -137,6 +138,7 @@ function Weather() {
   return (
     <Card sx={{ maxWidth: 345, margin: '2rem' }}>
       <CardContent>
+        <AccuWeatherAutocomplete />
         <Typography variant="h5" component="div" align="center">
           Weather for {location}
         </Typography>
