@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Typography, Card, CardContent, TextField, Box } from '@mui/material';
+import { Typography, Card, CardContent, TextField } from '@mui/material';
 import { ACCUWEATHER_API_KEY } from '../global-config';
 import { styled } from '@mui/material/styles';
 import { formatDate } from './Utils/FormatDate';
@@ -9,7 +9,7 @@ import { setThreshold } from '../store/settingsActions';
 import AccuWeatherAutocomplete from './AccuWeatherAutocomplete';
 
 function Weather() {
-  const [location, setLocation] = useState('Athens, Greece');
+  const [location, setLocation] = useState('');
   const [locationKey, setLocationKey] = useState(null);
   const [weatherData, setWeatherData] = useState({});
   const [lastViewedTime, setLastViewedTime] = useState(null);
@@ -31,8 +31,19 @@ function Weather() {
       .catch((error) => console.log(error));
   }, []);
 
+  const onAutocompleteChangeHandler = (value) => {
+    if (value) {
+      setLocationKey(value.Key);
+      setLocation(`${value.LocalizedName}, ${value.Country.LocalizedName}, 
+      ${value.AdministrativeArea.LocalizedName}`)
+    } else {
+      setLocationKey(null);
+    }
+  };
+
   useEffect(() => {
-    // Fetch location key when component mounts or location changes
+    /* // Fetch location key when component mounts or location changes
+
     fetch(
       `https://dataservice.accuweather.com/locations/v1/search?apikey=${ACCUWEATHER_API_KEY}&q=${location}`
     )
@@ -45,7 +56,7 @@ function Weather() {
           setLocationKey(null);
         }
       })
-      .catch((error) => console.log(error));
+      .catch((error) => console.log(error)); */
 
     // Fetch weather data when location key is available
     if (locationKey !== null) {
@@ -60,11 +71,11 @@ function Weather() {
         })
         .catch((error) => console.log(error));
     }
-  }, [location, locationKey]);
+  }, [locationKey]);
 
   useEffect(() => {
     // Check weather condition after a delay
-    const delay = 60 * 1000; // 1 minute delay
+    const delay = 60 * 60 * 1000; // 60 minute delay
     const interval = setInterval(() => {
       if (lastViewedTime !== null && locationKey !== null) {
         fetch(
@@ -74,7 +85,10 @@ function Weather() {
           .then((data) => {
             const forecasts = data.DailyForecasts;
             const initialForecasts = weatherData.DailyForecasts;
+
             console.log(threshold);
+            console.log(forecasts[0].Date);
+            console.log(new Date(lastViewedTime));
 
             for (let i = 0; i < forecasts.length; i++) {
               for (let j = 0; j < initialForecasts.length; j++) {
@@ -88,7 +102,11 @@ function Weather() {
                     // Send notification
                     const title = 'Weather Alert';
                     const options = {
-                      body: `Minimum temperature on ${forecasts[i].Date} has altered since ${lastViewedTime} to ${forecasts[i].Temperature.Minimum.Value}°C`,
+                      body: `Minimum temperature on ${formatDate(
+                        forecasts[i].Date
+                      )} has altered since ${new Date(lastViewedTime)} to ${
+                        forecasts[i].Temperature.Minimum.Value
+                      }°C`,
                     };
                     //new Notification(title, options);
                     alert(title + ' ' + options.body);
@@ -102,7 +120,11 @@ function Weather() {
                     // Send notification
                     const title = 'Weather Alert';
                     const options = {
-                      body: `Maximum temperature on ${forecasts[i].Date} has altered since ${lastViewedTime} to ${forecasts[i].Temperature.Maximum.Value}°C`,
+                      body: `Maximum temperature on ${formatDate(
+                        forecasts[i].Date
+                      )} has altered since ${new Date(lastViewedTime)} to ${
+                        forecasts[i].Temperature.Maximum.Value
+                      }°C`,
                     };
                     //new Notification(title, options);
                     alert(title + ' ' + options.body);
@@ -114,7 +136,11 @@ function Weather() {
                     // Send notification
                     const title = 'Weather Alert';
                     const options = {
-                      body: `Weather conditions on ${forecasts[i].Date} has altered since ${lastViewedTime} to ${forecasts[i].Day.IconPhrase}`,
+                      body: `Weather conditions on ${formatDate(
+                        forecasts[i].Date
+                      )} has altered since ${new Date(lastViewedTime)} to ${
+                        forecasts[i].Day.IconPhrase
+                      }`,
                     };
                     //new Notification(title, options);
                     alert(title + ' ' + options.body);
@@ -131,28 +157,30 @@ function Weather() {
     return () => clearInterval(interval); //Possibly need to make changes when worker functionality is enabled
   }, [lastViewedTime, locationKey, threshold, weatherData.DailyForecasts]);
 
-  const handleLocationChange = (event) => {
+  /* const handleLocationChange = (event) => {
     setLocation(event.target.value);
-  };
+  }; */
 
   return (
     <Card sx={{ maxWidth: 345, margin: '2rem' }}>
       <CardContent>
-        <AccuWeatherAutocomplete />
-        <Typography variant="h5" component="div" align="center">
+        <AccuWeatherAutocomplete margin={2}
+          onAutocompleteChange={onAutocompleteChangeHandler}
+        />
+       {location && (<Typography variant="h5" component="div" align="center" m={2}>
           Weather for {location}
-        </Typography>
-        <TextField
+        </Typography>)}
+       {/*   <TextField
           label="Location"
           variant="standard"
           value={location}
           onChange={handleLocationChange}
           margin="normal"
           fullWidth
-        />
+        /> */}
         {weatherData.Headline && (
           <div>
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" color="text.secondary" align='center'>
               {weatherData.Headline.Text}
             </Typography>
             {/*  <Typography variant="body1" color="text.primary" margin={2}>
@@ -197,8 +225,10 @@ function Weather() {
                   />
 
                   <Typography variant="body1" color="text.primary" margin={1}>
-                    {forecast.Temperature.Maximum.Value}°
-                    {forecast.Temperature.Maximum.Unit}
+                    Max: {forecast.Temperature.Maximum.Value}°
+                    {forecast.Temperature.Maximum.Unit} - Min:{' '}
+                    {forecast.Temperature.Minimum.Value}°
+                    {forecast.Temperature.Minimum.Unit}
                   </Typography>
                   <Typography variant="body1" color="text.primary" margin={1}>
                     {forecast.Day.IconPhrase}
