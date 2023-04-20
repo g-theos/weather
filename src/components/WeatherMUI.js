@@ -38,6 +38,7 @@ function Weather() {
       ${value.AdministrativeArea.LocalizedName}`)
     } else {
       setLocationKey(null);
+      setLocation('');
     }
   };
 
@@ -178,7 +179,7 @@ function Weather() {
           margin="normal"
           fullWidth
         /> */}
-        {weatherData.Headline && (
+        {location && weatherData.Headline && (
           <div>
             <Typography variant="body2" color="text.secondary" align='center'>
               {weatherData.Headline.Text}
@@ -201,7 +202,7 @@ function Weather() {
         >
           5 Day Forecast:
         </Typography>
-        {weatherData.DailyForecasts &&
+        {location && weatherData.DailyForecasts &&
           weatherData.DailyForecasts.map((forecast, index) => {
             return (
               <Card key={index} sx={{ margin: 3 }}>
