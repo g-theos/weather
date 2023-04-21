@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Typography, Card, CardContent, TextField } from '@mui/material';
+import {
+  Typography,
+  Card,
+  CardContent,
+  TextField,
+  Alert,
+  CircularProgress,
+} from '@mui/material';
 import { ACCUWEATHER_API_KEY } from '../global-config';
 import { styled } from '@mui/material/styles';
 import { formatDate } from './Utils/FormatDate';
@@ -7,8 +14,10 @@ import { FIREBASE_DATABASE_URL } from '../global-config';
 import { useDispatch, useSelector } from 'react-redux';
 import { setThreshold } from '../store/settingsActions';
 import AccuWeatherAutocomplete from './AccuWeatherAutocomplete';
+import useHttp from '../hooks/use-http';
 
 function Weather() {
+  const { isLoading, error, sendRequest: fetchData } = useHttp();
   const [location, setLocation] = useState('');
   const [locationKey, setLocationKey] = useState(null);
   const [weatherData, setWeatherData] = useState({});
@@ -23,19 +32,20 @@ function Weather() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    fetch(FIREBASE_DATABASE_URL + userId + '.json')
-      .then((response) => response.json())
-      .then((data) => {
-        dispatch(setThreshold(data.TempThreshold));
-      })
-      .catch((error) => console.log(error));
+    const fetchThreshold = (data) => {
+      dispatch(setThreshold(data.TempThreshold));
+    };
+    fetchData(
+      { url: FIREBASE_DATABASE_URL + userId + '.json' },
+      fetchThreshold
+    );
   }, []);
 
   const onAutocompleteChangeHandler = (value) => {
     if (value) {
       setLocationKey(value.Key);
       setLocation(`${value.LocalizedName}, ${value.Country.LocalizedName}, 
-      ${value.AdministrativeArea.LocalizedName}`)
+      ${value.AdministrativeArea.LocalizedName}`);
     } else {
       setLocationKey(null);
       setLocation('');
@@ -165,13 +175,17 @@ function Weather() {
   return (
     <Card sx={{ maxWidth: 345, margin: '2rem' }}>
       <CardContent>
-        <AccuWeatherAutocomplete margin={2}
+        <AccuWeatherAutocomplete
           onAutocompleteChange={onAutocompleteChangeHandler}
         />
-       {location && (<Typography variant="h5" component="div" align="center" m={2}>
-          Weather for {location}
-        </Typography>)}
-       {/*   <TextField
+        {error && <Alert severity="error">{error}</Alert>}
+        {isLoading && <CircularProgress color="inherit" size={20} />}
+        {location && (
+          <Typography variant="h5" component="div" align="center" m={2}>
+            Weather for {location}
+          </Typography>
+        )}
+        {/*   <TextField
           label="Location"
           variant="standard"
           value={location}
@@ -181,7 +195,7 @@ function Weather() {
         /> */}
         {location && weatherData.Headline && (
           <div>
-            <Typography variant="body2" color="text.secondary" align='center'>
+            <Typography variant="body2" color="text.secondary" align="center">
               {weatherData.Headline.Text}
             </Typography>
             {/*  <Typography variant="body1" color="text.primary" margin={2}>
@@ -202,7 +216,8 @@ function Weather() {
         >
           5 Day Forecast:
         </Typography>
-        {location && weatherData.DailyForecasts &&
+        {location &&
+          weatherData.DailyForecasts &&
           weatherData.DailyForecasts.map((forecast, index) => {
             return (
               <Card key={index} sx={{ margin: 3 }}>
