@@ -12,9 +12,9 @@ import {
   Typography,
   CircularProgress,
   CardContent,
+  Alert,
   //CssBaseline
 } from '@mui/material';
-import { Margin } from '@mui/icons-material';
 
 const AuthForm = () => {
   const emailInputRef = useRef();
@@ -109,7 +109,7 @@ const AuthForm = () => {
                 </Button>
               )}
               {isLoading && <CircularProgress />}
-              {error && <Typography color="error">{error}</Typography>}
+              {error && <Alert severity="error">{error}</Alert>}
               <Button variant="text" onClick={switchAuthModeHandler}>
                 {isLoginIsNotSignUp
                   ? 'Create new account'

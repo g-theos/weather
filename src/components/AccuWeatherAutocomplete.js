@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Autocomplete, TextField, CircularProgress } from '@mui/material';
 import { ACCUWEATHER_API_KEY } from '../global-config';
+import useHttp from '../hooks/use-http';
 
 const AccuWeatherAutocomplete = (props) => {
   const [options, setOptions] = useState([]);
-  const [loading, setLoading] = useState(false);
+  //const [loading, setLoading] = useState(false);
+  const { isLoading, error, sendRequest: fetchData } = useHttp();
 
   /* useEffect(() => {
     async function fetchData() {
@@ -22,16 +24,17 @@ const AccuWeatherAutocomplete = (props) => {
 
   const searchHandler = async (event, value) => {
     if (value) {
-      setLoading(true);
-      const response = await fetch(
-        `http://dataservice.accuweather.com/locations/v1/cities/autocomplete?apikey=${ACCUWEATHER_API_KEY}&q=${value}`
+      const fetchAutocompleteData = (data) => {
+        setOptions(data);
+        console.log(data);
+      };
+      fetchData(
+        {
+          url: `http://dataservice.accuweather.com/locations/v1/cities/autocomplete?apikey=${ACCUWEATHER_API_KEY}&q=${value}`,
+        },
+        fetchAutocompleteData
       );
-      const data = await response.json();
-      setOptions(data);
-      console.log(data);
-      setLoading(false);
-    }
-    else setOptions([]);
+    } else setOptions([]);
   };
 
   const changeHandler = (event, value) => {
@@ -50,7 +53,7 @@ const AccuWeatherAutocomplete = (props) => {
     <Autocomplete
       sx={{ margin: '2rem' }}
       options={options || []}
-      loading={loading}
+      loading={isLoading}
       getOptionLabel={(option) => option.LocalizedName}
       renderOption={renderOptionHandler}
       isOptionEqualToValue={(option, value) => option.Key === value.Key}
@@ -62,7 +65,7 @@ const AccuWeatherAutocomplete = (props) => {
             ...params.InputProps,
             endAdornment: (
               <>
-                {loading && <CircularProgress color="inherit" size={20} />}
+                {isLoading && <CircularProgress color="inherit" size={20} />}
                 {params.InputProps.endAdornment}
               </>
             ),

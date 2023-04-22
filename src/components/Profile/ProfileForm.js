@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { FIREBASE_API_KEY } from '../../global-config';
+import { Card, CardContent, Button, TextField, Alert } from '@mui/material';
 import useHttp from '../../hooks/use-http';
 
 const ProfileForm = () => {
@@ -36,25 +37,32 @@ const ProfileForm = () => {
   };
 
   return (
-    <form onSubmit={submitHandler}>
-      <div>
-        <label htmlFor="new-password">New Password</label>
-        <input
-          type="password"
-          id="new-password"
-          minLength="8"
-          ref={newPasswordInputRef}
-        />
-      </div>
-      {!isLoading && !error && (
-        <div>
-          <button>Change Password</button>
-        </div>
-      )}
-      {isLoading && <p>Sending request...</p>}
-      {error && <p>{error}</p>}
-      {passwordChanged && <p>Password changed successfully</p>}
-    </form>
+    <Card sx={{ maxWidth: 345, margin: '2rem' }}>
+      <CardContent>
+        <form onSubmit={submitHandler}>
+          <div>
+            <label htmlFor="new-password">New Password</label>
+            <TextField
+              type="password"
+              id="new-password"
+              minLength={8}
+              required
+              inputRef={newPasswordInputRef}
+              variant='outlined'
+              fullWidth
+            />
+          </div>
+          {!isLoading && !error && (
+            <div style={{ margin: '1rem' }}>
+              <Button variant="contained" color="primary" type="submit">Change Password</Button>
+            </div>
+          )}
+          {isLoading && <Alert severity='info'>Sending request...</Alert>}
+          {error && <Alert severity="error">{error}</Alert>}
+          {passwordChanged && <Alert severity='info'>Password changed successfully</Alert>}
+        </form>
+      </CardContent>
+    </Card>
   );
 };
 
