@@ -21,20 +21,23 @@ const AccuWeatherAutocomplete = (props) => {
   }, []); */
 
   const searchHandler = async (event, value) => {
-    setLoading(true);
-    const response = await fetch(
-      `http://dataservice.accuweather.com/locations/v1/cities/autocomplete?apikey=${ACCUWEATHER_API_KEY}&q=${value}`
-    );
-    const data = await response.json();
-    setOptions(data);
-    console.log(data);
-    setLoading(false);
+    if (value) {
+      setLoading(true);
+      const response = await fetch(
+        `http://dataservice.accuweather.com/locations/v1/cities/autocomplete?apikey=${ACCUWEATHER_API_KEY}&q=${value}`
+      );
+      const data = await response.json();
+      setOptions(data);
+      console.log(data);
+      setLoading(false);
+    }
+    else setOptions([]);
   };
 
-  const changeHandler = (event, value) =>  {
+  const changeHandler = (event, value) => {
     props.onAutocompleteChange(value);
-    console.log(value)
-  }
+    console.log(value);
+  };
 
   const renderOptionHandler = (props, option) => (
     <div {...props} key={option.Key}>
@@ -44,7 +47,8 @@ const AccuWeatherAutocomplete = (props) => {
   );
 
   return (
-    <Autocomplete sx={{margin: '2rem'}}
+    <Autocomplete
+      sx={{ margin: '2rem' }}
       options={options || []}
       loading={loading}
       getOptionLabel={(option) => option.LocalizedName}

@@ -70,103 +70,105 @@ function Weather() {
       .catch((error) => console.log(error)); */
 
     // Fetch weather data when location key is available
+    const fetchWeatherData = (data) => {
+      setWeatherData(data);
+      setLastViewedTime(Date.now());
+      //console.log(new Date(lastViewedTime));
+    };
     if (locationKey !== null) {
-      fetch(
-        `https://dataservice.accuweather.com/forecasts/v1/daily/5day/${locationKey}?apikey=${ACCUWEATHER_API_KEY}&metric=true`
-      )
-        .then((response) => response.json())
-        .then((data) => {
-          setWeatherData(data);
-          setLastViewedTime(Date.now());
-          //console.log(new Date(lastViewedTime));
-        })
-        .catch((error) => console.log(error));
+      fetchData(
+        {
+          url: `https://dataservice.accuweather.com/forecasts/v1/daily/5day/${locationKey}?apikey=${ACCUWEATHER_API_KEY}&metric=true`,
+        },
+        fetchWeatherData
+      );
     }
-  }, [locationKey]);
+  }, [locationKey, fetchData]);
 
   useEffect(() => {
     // Check weather condition after a delay
     const delay = 60 * 60 * 1000; // 60 minute delay
     const interval = setInterval(() => {
       if (lastViewedTime !== null && locationKey !== null) {
-        fetch(
-          `https://dataservice.accuweather.com/forecasts/v1/daily/5day/${locationKey}?apikey=${ACCUWEATHER_API_KEY}&metric=true`
-        )
-          .then((response) => response.json())
-          .then((data) => {
-            const forecasts = data.DailyForecasts;
-            const initialForecasts = weatherData.DailyForecasts;
+        const compareWeatherData = (data) => {
+          const forecasts = data.DailyForecasts;
+          const initialForecasts = weatherData.DailyForecasts;
 
-            console.log(threshold);
-            console.log(forecasts[0].Date);
-            console.log(new Date(lastViewedTime));
+          console.log(threshold);
+          console.log(forecasts[0].Date);
+          console.log(new Date(lastViewedTime));
 
-            for (let i = 0; i < forecasts.length; i++) {
-              for (let j = 0; j < initialForecasts.length; j++) {
-                if (forecasts[i].EpochDate === initialForecasts[j].EpochDate) {
-                  if (
-                    Math.abs(
-                      forecasts[i].Temperature.Minimum.Value -
-                        initialForecasts[j].Temperature.Minimum.Value
-                    ) > threshold
-                  ) {
-                    // Send notification
-                    const title = 'Weather Alert';
-                    const options = {
-                      body: `Minimum temperature on ${formatDate(
-                        forecasts[i].Date
-                      )} has altered since ${new Date(lastViewedTime)} to ${
-                        forecasts[i].Temperature.Minimum.Value
-                      }°C`,
-                    };
-                    //new Notification(title, options);
-                    alert(title + ' ' + options.body);
-                  }
-                  if (
-                    Math.abs(
-                      forecasts[i].Temperature.Maximum.Value -
-                        initialForecasts[j].Temperature.Maximum.Value
-                    ) > threshold
-                  ) {
-                    // Send notification
-                    const title = 'Weather Alert';
-                    const options = {
-                      body: `Maximum temperature on ${formatDate(
-                        forecasts[i].Date
-                      )} has altered since ${new Date(lastViewedTime)} to ${
-                        forecasts[i].Temperature.Maximum.Value
-                      }°C`,
-                    };
-                    //new Notification(title, options);
-                    alert(title + ' ' + options.body);
-                  }
-                  if (
-                    forecasts[i].Day.IconPhrase !==
-                    initialForecasts[j].Day.IconPhrase
-                  ) {
-                    // Send notification
-                    const title = 'Weather Alert';
-                    const options = {
-                      body: `Weather conditions on ${formatDate(
-                        forecasts[i].Date
-                      )} has altered since ${new Date(lastViewedTime)} to ${
-                        forecasts[i].Day.IconPhrase
-                      }`,
-                    };
-                    //new Notification(title, options);
-                    alert(title + ' ' + options.body);
-                  }
+          for (let i = 0; i < forecasts.length; i++) {
+            for (let j = 0; j < initialForecasts.length; j++) {
+              if (forecasts[i].EpochDate === initialForecasts[j].EpochDate) {
+                if (
+                  Math.abs(
+                    forecasts[i].Temperature.Minimum.Value -
+                      initialForecasts[j].Temperature.Minimum.Value
+                  ) > threshold
+                ) {
+                  // Send notification
+                  const title = 'Weather Alert';
+                  const options = {
+                    body: `Minimum temperature on ${formatDate(
+                      forecasts[i].Date
+                    )} has altered since ${new Date(lastViewedTime)} to ${
+                      forecasts[i].Temperature.Minimum.Value
+                    }°C`,
+                  };
+                  //new Notification(title, options);
+                  alert(title + ' ' + options.body);
+                }
+                if (
+                  Math.abs(
+                    forecasts[i].Temperature.Maximum.Value -
+                      initialForecasts[j].Temperature.Maximum.Value
+                  ) > threshold
+                ) {
+                  // Send notification
+                  const title = 'Weather Alert';
+                  const options = {
+                    body: `Maximum temperature on ${formatDate(
+                      forecasts[i].Date
+                    )} has altered since ${new Date(lastViewedTime)} to ${
+                      forecasts[i].Temperature.Maximum.Value
+                    }°C`,
+                  };
+                  //new Notification(title, options);
+                  alert(title + ' ' + options.body);
+                }
+                if (
+                  forecasts[i].Day.IconPhrase !==
+                  initialForecasts[j].Day.IconPhrase
+                ) {
+                  // Send notification
+                  const title = 'Weather Alert';
+                  const options = {
+                    body: `Weather conditions on ${formatDate(
+                      forecasts[i].Date
+                    )} has altered since ${new Date(lastViewedTime)} to ${
+                      forecasts[i].Day.IconPhrase
+                    }`,
+                  };
+                  //new Notification(title, options);
+                  alert(title + ' ' + options.body);
                 }
               }
             }
-          })
-          .catch((error) => console.log(error));
+          }
+        };
+        fetchData(
+          {
+            url: `https://dataservice.accuweather.com/forecasts/v1/daily/5day/${locationKey}?apikey=${ACCUWEATHER_API_KEY}&metric=true`,
+          },
+          compareWeatherData
+        )
       }
     }, delay);
 
     // Clean up interval when component unmounts
     return () => clearInterval(interval); //Possibly need to make changes when worker functionality is enabled
-  }, [lastViewedTime, locationKey, threshold, weatherData.DailyForecasts]);
+  }, [lastViewedTime, locationKey, threshold, weatherData.DailyForecasts, fetchData]);
 
   /* const handleLocationChange = (event) => {
     setLocation(event.target.value);
