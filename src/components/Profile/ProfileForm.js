@@ -1,6 +1,5 @@
 import { useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { FIREBASE_API_KEY } from '../../global-config';
 import { Card, CardContent, Button, TextField, Alert } from '@mui/material';
 import useHttp from '../../hooks/use-http';
 
@@ -23,7 +22,7 @@ const ProfileForm = () => {
 
     fetchPassword(
       {
-        url: `https://identitytoolkit.googleapis.com/v1/accounts:update?key=${FIREBASE_API_KEY}`,
+        url: `https://identitytoolkit.googleapis.com/v1/accounts:update?key=${process.env.REACT_APP_FIREBASE_API_KEY}`,
         method: 'POST',
         body: {
           idToken: token,

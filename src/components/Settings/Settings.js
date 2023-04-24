@@ -1,9 +1,8 @@
-import { Card, CardContent, Typography } from '@mui/material';
+import { Card, CardContent, Typography, Alert, CircularProgress } from '@mui/material';
 import DiscreteSliderMarks from './DiscreteSliderMarks';
 import { useDispatch, useSelector } from 'react-redux';
 import { setThreshold } from '../../store/settingsActions';
 import useHttp from '../../hooks/use-http';
-import { FIREBASE_DATABASE_URL } from '../../global-config';
 
 const Settings = () => {
   const dispatch = useDispatch();
@@ -15,7 +14,7 @@ const Settings = () => {
     const setThresholdValue = () => dispatch(setThreshold(value));
     fetchSettings(
       {
-        url: FIREBASE_DATABASE_URL + userId + '.json',
+        url: process.env.REACT_APP_FIREBASE_DATABASE_URL + userId + '.json',
         method: 'PATCH',
         body: { TempThreshold: value },
         headers: { 'Content-Type': 'application/json' },
@@ -37,6 +36,8 @@ const Settings = () => {
         <Typography variant="body1" color="text.primary" marginBottom={4}>
           Set the temperature threshold
         </Typography>
+        {error && <Alert severity="error">{error}</Alert>}
+        {isLoading && <CircularProgress color="inherit" size={20} />}
         <DiscreteSliderMarks
           value={threshold}
           onChangeSettings={changeSettingsHandler}

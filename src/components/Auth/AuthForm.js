@@ -1,7 +1,6 @@
-import { useState, useRef, useContext } from 'react';
+import { useState, useRef } from 'react';
 import useHttp from '../../hooks/use-http';
-import { FIREBASE_API_KEY } from '../../global-config';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { login } from '../../store/authActions';
 
 import { useNavigate } from 'react-router-dom';
@@ -12,8 +11,7 @@ import {
   Typography,
   CircularProgress,
   CardContent,
-  Alert,
-  //CssBaseline
+  Alert
 } from '@mui/material';
 
 const AuthForm = () => {
@@ -49,9 +47,9 @@ const AuthForm = () => {
 
     let url;
     if (isLoginIsNotSignUp) {
-      url = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${FIREBASE_API_KEY}`;
+      url = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${process.env.REACT_APP_FIREBASE_API_KEY}`;
     } else {
-      url = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${FIREBASE_API_KEY}`;
+      url = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${process.env.REACT_APP_FIREBASE_API_KEY}`;
     }
 
     fetchUser(
