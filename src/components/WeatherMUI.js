@@ -255,7 +255,7 @@ function Weather() {
                     {forecast.Temperature.Minimum.Unit}
                   </Typography>
                   <Typography variant="body1" color="text.primary" margin={1}>
-                    {forecast.Day.IconPhrase}
+                    {forecast.Day.IconPhrase.replace('w/', 'with')}
                   </Typography>
                 </CardContent>
               </Card>
