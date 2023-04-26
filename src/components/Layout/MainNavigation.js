@@ -4,6 +4,8 @@ import { logout } from '../../store/authActions';
 import { AppBar, Toolbar, Typography, Button, IconButton } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { styled } from '@mui/system';
+import TemporaryDrawer from './MainDrawer';
+import { useState } from 'react';
 
 const Root = styled('div')(({ theme }) => ({
   flexGrow: 1,
@@ -16,8 +18,13 @@ const Title = styled(Typography)(({ theme }) => ({
 const MainNavigation = () => {
   const dispatch = useDispatch();
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+  const [tempDrawer, setTempDrawer] = useState(false);
 
-  const logoutHandler = () => {
+  const iconButtonHandler = () => {
+    if (isLoggedIn) { setTempDrawer((tempDrawer) => !tempDrawer) };
+  };
+
+  const logoutHandler = (value) => {
     dispatch(logout());
   };
 
@@ -31,8 +38,10 @@ const MainNavigation = () => {
             color="inherit"
             aria-label="menu"
             sx={{ mr: 2 }}
+            onClick={iconButtonHandler}
           >
             <MenuIcon />
+            {tempDrawer && isLoggedIn && <TemporaryDrawer logoutHandler={logoutHandler} />}
           </IconButton>
           <Title variant="h6" component="div">
             <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
