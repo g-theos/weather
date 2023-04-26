@@ -6,6 +6,7 @@ import {
   TextField,
   Alert,
   CircularProgress,
+  Button,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { formatDate } from './Utils/FormatDate';
@@ -20,6 +21,7 @@ function Weather() {
   const [locationKey, setLocationKey] = useState(null);
   const [weatherData, setWeatherData] = useState({});
   const [lastViewedTime, setLastViewedTime] = useState(null);
+  const [notifyMeButton, setNotifyMeButton] = useState(true);
   const WeatherIcon = styled('img')({
     width: 100,
     //height: 100,
@@ -44,6 +46,7 @@ function Weather() {
       setLocationKey(value.Key);
       setLocation(`${value.LocalizedName}, ${value.Country.LocalizedName}, 
       ${value.AdministrativeArea.LocalizedName}`);
+      setNotifyMeButton(true);
     } else {
       setLocationKey(null);
       setLocation('');
@@ -83,16 +86,24 @@ function Weather() {
     }
   }, [locationKey, fetchData]);
 
-  useEffect(() => {
+  const notifyMeHandler = () => {
+    setNotifyMeButton(false);
+    /*  useEffect(() => { */
     // Check weather condition after a delay
     const delay = 60 * 60 * 1000; // 60 minute delay
+    //const delay = 10 * 1000;
     const interval = setInterval(() => {
+      if (Date.now() > lastViewedTime + 5 * 24 * 60 * 60 * 1000) { //5 days theoretical duration
+      //if (Date.now() > lastViewedTime +  30 * 1000) {
+        clearInterval(interval);
+      }
       if (lastViewedTime !== null && locationKey !== null) {
         const compareWeatherData = (data) => {
           const { DailyForecasts: forecasts } = data;
           const { DailyForecasts: initialForecasts } = weatherData;
 
           console.log(threshold);
+          console.log(location)
           console.log(forecasts[0].Date);
           console.log(new Date(lastViewedTime));
 
@@ -167,14 +178,9 @@ function Weather() {
     }, delay);
 
     // Clean up interval when component unmounts
-    return () => clearInterval(interval); //Possibly need to make changes when worker functionality is enabled
-  }, [
-    lastViewedTime,
-    locationKey,
-    threshold,
-    weatherData,
-    fetchData,
-  ]);
+    /* return () => clearInterval(interval); //Possibly need to make changes when worker functionality is enabled
+  }, [lastViewedTime, locationKey, threshold, weatherData, fetchData]); */
+  };
 
   /* const handleLocationChange = (event) => {
     setLocation(event.target.value);
@@ -214,6 +220,17 @@ function Weather() {
             <Typography variant="body1" color="text.primary" margin={2}>
               Condition: {weatherData.DailyForecasts[0].Day.IconPhrase}
             </Typography> */}
+          </div>
+        )}
+        {location && (
+          <div style={{ textAlign: 'center' }}>
+            <Button disabled={!notifyMeButton}
+              variant="outlined"
+              sx={{ marginTop: '2rem', width: '75%' }}
+              onClick={notifyMeHandler}
+            >
+              Notify me if weather conditions change
+            </Button>
           </div>
         )}
         <Typography
