@@ -5,7 +5,8 @@ import { AppBar, Toolbar, Typography, Button, IconButton } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { styled } from '@mui/system';
 import TemporaryDrawer from './MainDrawer';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useMediaQuery } from '@mui/material';
 
 const Root = styled('div')(({ theme }) => ({
   flexGrow: 1,
@@ -30,19 +31,7 @@ const MainNavigation = () => {
     dispatch(logout());
   };
 
-  const [windowSize, setWindowSize] = useState(window.innerWidth);
-
-  useEffect(() => {
-    const handleWindowResize = () => {
-      setWindowSize(window.innerWidth);
-    };
-
-    window.addEventListener('resize', handleWindowResize);
-
-    return () => {
-      window.removeEventListener('resize', handleWindowResize);
-    };
-  }, []);
+  const matches = useMediaQuery('(min-width:600px)');
 
   return (
     <Root>
@@ -66,7 +55,7 @@ const MainNavigation = () => {
               Weather
             </Link>
           </Title>
-          {windowSize > 480 && (
+          {matches && (
             <>
               <Button color="inherit">
                 {/* {!isLoggedIn && (
