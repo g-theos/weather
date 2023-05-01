@@ -2,7 +2,7 @@ import { Card, CardContent, Typography, Alert, CircularProgress } from '@mui/mat
 import DiscreteSliderMarks from './DiscreteSliderMarks';
 import { useDispatch, useSelector } from 'react-redux';
 import { setThreshold } from '../../store/settingsActions';
-import useHttp from '../../hooks/use-http';
+import useHttp from '../../hooks/useHttp';
 
 const Settings = () => {
   const dispatch = useDispatch();

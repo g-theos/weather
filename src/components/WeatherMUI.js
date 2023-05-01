@@ -9,11 +9,11 @@ import {
   Button,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { formatDate } from './Utils/FormatDate';
+import { formatDate } from '../utils/formatDate';
 import { useDispatch, useSelector } from 'react-redux';
 import { setThreshold } from '../store/settingsActions';
 import AccuWeatherAutocomplete from './AccuWeatherAutocomplete';
-import useHttp from '../hooks/use-http';
+import useHttp from '../hooks/useHttp';
 
 function Weather() {
   const { isLoading, error, sendRequest: fetchData } = useHttp();

@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Card, CardContent, Button, TextField, Alert } from '@mui/material';
-import useHttp from '../../hooks/use-http';
+import useHttp from '../../hooks/useHttp';
 
 const ProfileForm = () => {
   const newPasswordInputRef = useRef();

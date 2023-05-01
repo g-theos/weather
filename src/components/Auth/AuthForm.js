@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import useHttp from '../../hooks/use-http';
+import useHttp from '../../hooks/useHttp';
 import { useDispatch } from 'react-redux';
 import { login } from '../../store/authActions';
 
@@ -21,12 +21,12 @@ const AuthForm = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const [isLoginIsNotSignUp, setIsLoginIsNotSignUp] = useState(true);
+  const [isLogin, setIsLogin] = useState(true);
   //const [formIsValid, setFormIsValid] = useState(true);
   const { isLoading, error, sendRequest: fetchUser } = useHttp();
 
   const switchAuthModeHandler = () => {
-    setIsLoginIsNotSignUp((prevState) => !prevState);
+    setIsLogin((prevState) => !prevState);
   };
 
   const submitHandler = (event) => {
@@ -46,7 +46,7 @@ const AuthForm = () => {
     };
 
     let url;
-    if (isLoginIsNotSignUp) {
+    if (isLogin) {
       url = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${process.env.REACT_APP_FIREBASE_API_KEY}`;
     } else {
       url = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${process.env.REACT_APP_FIREBASE_API_KEY}`;
@@ -74,7 +74,7 @@ const AuthForm = () => {
       <Card sx={{ maxWidth: 345, margin: '2rem' }}>
         <CardContent>
           <Typography variant="h5" component="div" align="center" mb={2}>
-            {isLoginIsNotSignUp ? 'Login' : 'Sign Up'}
+            {isLogin ? 'Login' : 'Sign Up'}
           </Typography>
           <form onSubmit={submitHandler}>
             <div>
@@ -103,13 +103,13 @@ const AuthForm = () => {
             <div style={{ margin: '1rem' }}>
               {!isLoading && (
                 <Button variant="contained" color="primary" type="submit">
-                  {isLoginIsNotSignUp ? 'Login' : 'Create Account'}
+                  {isLogin ? 'Login' : 'Create Account'}
                 </Button>
               )}
               {isLoading && <CircularProgress />}
               {error && <Alert severity="error">{error}</Alert>}
               <Button variant="text" onClick={switchAuthModeHandler}>
-                {isLoginIsNotSignUp
+                {isLogin
                   ? 'Create new account'
                   : 'Login with existing account'}
               </Button>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Autocomplete, TextField, CircularProgress, Alert } from '@mui/material';
-import useHttp from '../hooks/use-http';
+import useHttp from '../hooks/useHttp';
 
 const AccuWeatherAutocomplete = (props) => {
   const [options, setOptions] = useState([]);

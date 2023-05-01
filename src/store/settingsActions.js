@@ -1,5 +1,5 @@
-export const SetThreshold = 'SetThreshold';
+export const SET_THRESHOLD = 'SET_THRESHOLD';
 
 export const setThreshold = (threshold) => {
-  return { type: SetThreshold, threshold: threshold };
+  return { type: SET_THRESHOLD, threshold: threshold };
 };
