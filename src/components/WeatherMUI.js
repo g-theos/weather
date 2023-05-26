@@ -14,6 +14,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setThreshold } from '../store/settingsActions';
 import AccuWeatherAutocomplete from './AccuWeatherAutocomplete';
 import useHttp from '../hooks/useHttp';
+import { messaging } from '../firebase';
+import { getToken } from 'firebase/messaging';
 
 function Weather() {
   const { isLoading, error, sendRequest: fetchData } = useHttp();
@@ -86,15 +88,48 @@ function Weather() {
     }
   }, [locationKey, fetchData]);
 
-  const notifyMeHandler = () => {
+  // Request permission to show notifications
+  const requestNotificationPermission = async () => {
+    try {
+      const permission = await Notification.requestPermission();
+      if (permission === 'granted') {
+        const token = await getToken(messaging, {
+          vapidKey: process.env.REACT_APP_VAPID_KEY,
+        });
+        console.log('User notification token:', token);
+        // Save the user's token to Firestore or your database of choice
+        const saveUserToken = () => {};
+        if (token) {
+          fetchData(
+            {
+              url:
+                process.env.REACT_APP_FIREBASE_DATABASE_URL + userId + '.json',
+              method: 'PATCH',
+              body: { [locationKey]: { MessagingToken: token } },
+              headers: { 'Content-Type': 'application/json' },
+            },
+            saveUserToken
+          );
+        }
+      } else {
+        console.log('Permission for notifications denied');
+      }
+    } catch (error) {
+      console.error('Unable to get permission to notify.', error);
+    }
+  };
+
+  const notifyMeHandler = async () => {
     setNotifyMeButton(false);
+    await requestNotificationPermission();
     /*  useEffect(() => { */
     // Check weather condition after a delay
     const delay = 60 * 60 * 1000; // 60 minute delay
     //const delay = 10 * 1000;
     const interval = setInterval(() => {
-      if (Date.now() > lastViewedTime + 5 * 24 * 60 * 60 * 1000) { //5 days theoretical duration
-      //if (Date.now() > lastViewedTime +  30 * 1000) {
+      if (Date.now() > lastViewedTime + 5 * 24 * 60 * 60 * 1000) {
+        //5 days theoretical duration
+        //if (Date.now() > lastViewedTime +  30 * 1000) {
         clearInterval(interval);
       }
       if (lastViewedTime !== null && locationKey !== null) {
@@ -103,7 +138,7 @@ function Weather() {
           const { DailyForecasts: initialForecasts } = weatherData;
 
           console.log(threshold);
-          console.log(location)
+          console.log(location);
           console.log(forecasts[0].Date);
           console.log(new Date(lastViewedTime));
 
@@ -224,7 +259,8 @@ function Weather() {
         )}
         {location && (
           <div style={{ textAlign: 'center' }}>
-            <Button disabled={!notifyMeButton}
+            <Button
+              disabled={!notifyMeButton}
               variant="outlined"
               sx={{ marginTop: '2rem', width: '75%' }}
               onClick={notifyMeHandler}
