@@ -35,7 +35,9 @@ function Weather() {
 
   useEffect(() => {
     const fetchThreshold = (data) => {
-      dispatch(setThreshold(data.TempThreshold));
+      if (data) {
+        dispatch(setThreshold(data.TempThreshold));
+      }
     };
     fetchData(
       { url: process.env.REACT_APP_FIREBASE_DATABASE_URL + userId + '.json' },
