@@ -33,7 +33,7 @@ function Weather() {
 
   useEffect(() => {
     const fetchThreshold = (data) => {
-      if (data.TempThreshold) { //Check implemented for new users or users that have not set the Settings page slider (no db TempThreshold entry, defaults to 3 from the reducer)
+      if (data && data.TempThreshold) { //Check implemented for new users or users that have not set the Settings page slider (no db TempThreshold entry, defaults to 3 from the reducer)
         dispatch(setThreshold(data.TempThreshold));
       }
     };
