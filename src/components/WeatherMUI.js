@@ -33,7 +33,9 @@ function Weather() {
 
   useEffect(() => {
     const fetchThreshold = (data) => {
-      dispatch(setThreshold(data.TempThreshold));
+      if (data.TempThreshold) { //Check implemented for new users or users that have not set the Settings page slider (no db TempThreshold entry, defaults to 3 from the reducer)
+        dispatch(setThreshold(data.TempThreshold));
+      }
     };
     fetchData(
       { url: process.env.REACT_APP_FIREBASE_DATABASE_URL + userId + '.json' },

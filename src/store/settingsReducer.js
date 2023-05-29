@@ -1,6 +1,6 @@
 import { SET_THRESHOLD } from './settingsActions';
 
-const initialState = { threshold: 5 };
+const initialState = { threshold: 3 };
 
 const settingsReducer = (state = initialState, action) => {
   if (action.type === SET_THRESHOLD) {

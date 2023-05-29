@@ -15,7 +15,7 @@ const AccuWeatherAutocomplete = (props) => {
       };
       fetchData(
         {
-          url: `http://dataservice.accuweather.com/locations/v1/cities/autocomplete?apikey=${process.env.REACT_APP_ACCUWEATHER_API_KEY}&q=${value}`,
+          url: `https://dataservice.accuweather.com/locations/v1/cities/autocomplete?apikey=${process.env.REACT_APP_ACCUWEATHER_API_KEY}&q=${value}`,
         },
         fetchAutocompleteData
       );
