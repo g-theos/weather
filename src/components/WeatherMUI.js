@@ -29,13 +29,15 @@ function Weather() {
     //height: 100,
   });
   const userId = useSelector((state) => state.auth.userId);
+  console.log('userid', userId);
   const threshold = useSelector((state) => state.settings.threshold); // customizable threshold
+  console.log('wmuithreshold', threshold);
 
   const dispatch = useDispatch();
 
   useEffect(() => {
     const fetchThreshold = (data) => {
-      if (data) {
+      if (data.TempThreshold) { //Check implemented for new users or users that have not set the Settings page slider (no db TempThreshold entry, defaults to 3 from the reducer)
         dispatch(setThreshold(data.TempThreshold));
       }
     };

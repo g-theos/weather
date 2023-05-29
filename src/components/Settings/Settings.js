@@ -7,6 +7,7 @@ import useHttp from '../../hooks/useHttp';
 const Settings = () => {
   const dispatch = useDispatch();
   const threshold = useSelector((state) => state.settings.threshold);
+  console.log('settings: ', threshold);
   const userId = useSelector((state) => state.auth.userId);
   const { isLoading, error, sendRequest: fetchSettings } = useHttp();
 
